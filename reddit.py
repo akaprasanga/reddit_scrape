@@ -84,7 +84,7 @@ def write_submission(i,t,a,k,u,d,s,idd,parent,text,subid,flag):
 
 
 subreddit = reddit.subreddit(name)
-hot_python = subreddit.hot(limit=2)
+hot_python = subreddit.hot(limit=5)
 
 
 
