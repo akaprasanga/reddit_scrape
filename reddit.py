@@ -1,6 +1,7 @@
 import praw
 import re
 import argparse
+import prawcore.exceptions
 
 #to manage the argument from terminal
 parser = argparse.ArgumentParser()
@@ -40,39 +41,26 @@ db = MySQLdb.connect("localhost","root","password","reddit" )
 
 # prepare a cursor object using cursor() method
 cursor = db.cursor()
-cursor2 = db.cursor()
 
-# #function to write into database
+#function to write into database and more than required arguments are passed to bypass function overloading
 def write_submission(i,t,a,k,u,d,s,idd,parent,text,subid,flag):
 
 
     # Open database connection
-    db = MySQLdb.connect("localhost","root","password","reddit" )
-    print("function call")
-
+    db = MySQLdb.connect("localhost","root","password","reddit")
     # prepare a cursor object using cursor() method
-    cursor = db.cursor()
-
-
-    if (flag == 1):
-        # Prepare SQL query to INSERT a record into the database.
-        sql = "INSERT INTO submission(ID, \
-            TITLE, AUTHOR, KARMA, UPS, DOWNS, SCORE) \
-            VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s' )" % \
-            (i,t, a, k, u, d, s)
-    else:
-
-        sql = "INSERT INTO comments(id, \
-        parent_id, text, submission_id) \
-        VALUES ('%s', '%s', '%s', '%s')" % \
-        (idd,parent,text,subid)
-
+    cursor = db.cursor()    
+    # Prepare SQL query to INSERT a record into the database.
+    sql_submission = "INSERT INTO submission(ID, TITLE, AUTHOR, KARMA, UPS, DOWNS, SCORE) VALUES (%s, %s, %s, %s, %s, %s, %s )"
+    sql_comment = "INSERT INTO comments(id, parent_id, text, submission_id) VALUES (%s, %s, %s, %s)"
     try:
         # Execute the SQL command
-        cursor.execute(sql)
-        # Commit your changes in the database
+        if (flag == 1):
+            cursor.execute(sql_submission,(i,t,a,k,u,d,s))
+        else:
+            cursor.execute(sql_comment,(idd,parent,text.encode('utf-8'),subid))
+        # Commit changes in the database
         db.commit()
-        print("WRITTEN")
     except:
         # Rollback in case there is any error
         db.rollback()
@@ -84,10 +72,7 @@ def write_submission(i,t,a,k,u,d,s,idd,parent,text,subid,flag):
 
 
 subreddit = reddit.subreddit(name)
-hot_python = subreddit.hot(limit=2)
-
-
-
+hot_python = subreddit.hot(limit=3)
 
 # looking at the individual post
 for submission in hot_python:
@@ -102,12 +87,11 @@ for submission in hot_python:
         print(title)
         write_submission(idNum,title,author,karma,ups,downs,score,'idd','parent','text','subid',1)
 
-
 # now looking at the comments
         submission.comments.replace_more(limit=0)
         for comment in submission.comments.list():
             selfID = comment.id
-            parent = comment.parent()
+            parent = str(comment.parent())
             body = comment.body
             sub_id = submission.id
             write_submission('idNum','title','author','karma','ups','downs','score',selfID,parent,body,sub_id,0)
