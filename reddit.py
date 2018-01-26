@@ -72,14 +72,7 @@ def write_submission(i,t,a,k,u,d,s,idd,parent,text,subid,flag):
 
 
 subreddit = reddit.subreddit(name)
-<<<<<<< HEAD
-hot_python = subreddit.hot(limit=3)
-=======
-hot_python = subreddit.hot(limit=5)
-
-
-
->>>>>>> 5d5257520691fc97928c1fb2ec43943cc4c8cd8e
+hot_python = subreddit.hot(limit=2)
 
 # looking at the individual post
 for submission in hot_python:
