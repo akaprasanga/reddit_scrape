@@ -12,8 +12,9 @@ parser.add_argument("n",help="Name of subreddit or url")
 args = parser.parse_args()
 
 # obtaining a reddit instance
-reddit = praw.Reddit(client_id='reVWPERa_RrRFg',
-client_secret='dMHgiJF2LlvvnkV4CLjXqQRzfTs',
+#use your own credentials
+reddit = praw.Reddit(client_id='xxxxxxxxxxxxxxxxx',
+client_secret='xxxxxxxxxxxxxxxxx',
 username='reddit_data',
 password='reddit_data',user_agent='anything')
 
